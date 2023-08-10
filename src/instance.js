@@ -32,7 +32,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.InitTrail();
 
       // Opt-in to getting calls to Tick()
-      //this._StartTicking();
+      // this._StartTicking();
     }
 
     Trigger(method) {
