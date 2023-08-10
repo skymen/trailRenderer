@@ -3,7 +3,7 @@ module.exports = {
   addonType: "behavior",
   id: "skymenTrail",
   name: "Trail Renderer",
-  version: "2.0.0.1",
+  version: "2.0.0.2",
   category:
     // "attributes",
     // "movements",
@@ -537,7 +537,6 @@ module.exports = {
           name: "Enabled",
           desc: "Whether the trail is enabled",
           type: "boolean",
-          value: "true",
         },
       ],
       listName: "Set enabled",
