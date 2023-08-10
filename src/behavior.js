@@ -33,6 +33,11 @@ function camelCasify(str) {
   return result;
 }
 
+function PascalCasify(str) {
+  let camelCasified = camelCasify(str);
+  return camelCasified.charAt(0).toUpperCase() + camelCasified.substring(1);
+}
+
 C3.Behaviors[BEHAVIOR_INFO.id] = class extends C3.SDKBehaviorBase {
   constructor(opts) {
     super(opts);
@@ -103,7 +108,7 @@ Object.keys(BEHAVIOR_INFO.Exps).forEach((key) => {
   if (!ace.autoScriptInterface) return;
   scriptInterface.prototype[camelCasify(key)] = function (...args) {
     const sdkInst = map.get(this);
-    return B_C.Exps[camelCasify(key)].call(sdkInst, ...args);
+    return B_C.Exps[PascalCasify(key)].call(sdkInst, ...args);
   };
 });
 //====== SCRIPT INTERFACE ======
@@ -134,7 +139,7 @@ Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
 });
 Object.keys(BEHAVIOR_INFO.Exps).forEach((key) => {
   const ace = BEHAVIOR_INFO.Exps[key];
-  B_C.Exps[camelCasify(key)] = function (...args) {
+  B_C.Exps[PascalCasify(key)] = function (...args) {
     if (ace.forward) return ace.forward(this).call(this, ...args);
     if (ace.handler) return ace.handler.call(this, ...args);
   };
