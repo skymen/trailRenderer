@@ -3,7 +3,7 @@ module.exports = {
   addonType: "behavior",
   id: "skymenTrail",
   name: "Trail Renderer",
-  version: "2.0.0.0",
+  version: "2.0.0.1",
   category:
     // "attributes",
     // "movements",
@@ -132,6 +132,16 @@ module.exports = {
       },
       name: "Interval",
       desc: "The interval between each step. If 0, the interval is the same as the framerate",
+    },
+    {
+      type: "check",
+      id: "enabled",
+      options: {
+        initialValue: true,
+        interpolatable: false,
+      },
+      name: "Enabled",
+      desc: "Whether the trail is enabled",
     },
   ],
   aceCategories: {
@@ -513,6 +523,27 @@ module.exports = {
       displayText: "{my}: Set point {0} to ({1}, {2}, {3})",
       description: "Set a point in the trail",
     },
+    SetEnabled: {
+      category: "general",
+      id: "SetEnabled",
+      forward: "_SetEnabled",
+      autoScriptInterface: true,
+      highlight: false,
+      deprecated: false,
+      isAsync: false,
+      params: [
+        {
+          id: "enabled",
+          name: "Enabled",
+          desc: "Whether the trail is enabled",
+          type: "boolean",
+          value: "true",
+        },
+      ],
+      listName: "Set enabled",
+      displayText: "{my}: Set enabled to {0}",
+      description: "Set whether the trail is enabled",
+    },
   },
   Cnds: {
     /*
@@ -717,6 +748,17 @@ module.exports = {
       listName: "Compare angle",
       displayText: "{my}: Point {0} angle {1} {2}",
       description: "Compare the angle of a point",
+    },
+    IsEnabled: {
+      category: "general",
+      id: "IsEnabled",
+      forward: "_IsEnabled",
+      autoScriptInterface: true,
+      highlight: true,
+      params: [],
+      listName: "Is enabled",
+      displayText: "{my}: Is enabled",
+      description: "Check if the trail is enabled",
     },
   },
   Exps: {

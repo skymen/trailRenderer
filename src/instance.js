@@ -23,12 +23,15 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
         this.widthStart = properties[2];
         this.widthEnd = properties[3];
         this.interval = Math.max(properties[4], 0);
+        this.enabled = properties[5];
       }
 
       this.lastGameTime = -this.interval;
 
       this._StopTicking();
-      this._StartTicking2();
+      if (this.enabled) {
+        this._StartTicking2();
+      }
       this.InitTrail();
 
       // Opt-in to getting calls to Tick()
@@ -452,6 +455,9 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
     _CompareAngle(id, cmp, value) {
       return C3.compare(this._GetAngle(id), cmp, value);
     }
+    _IsEnabled() {
+      return this.enabled;
+    }
 
     //Actions
     _Attach(object, angleTowardsNewPosition, imagePoint, destroyWithParent) {
@@ -513,6 +519,25 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.positions.yPositions[id] = y;
       this.positions.angles[id] = angle;
       this.needsRedraw = true;
+    }
+    _SetEnabled(enabled) {
+      if (this.enabled === enabled) return;
+      this.enabled = enabled;
+
+      if (this.enabled) {
+        this._StartTicking2();
+        if (this._IsAttached()) {
+          this._ResetToPoint(
+            this.attachedTo.GetWorldInfo().GetX(this.attachedToImagePoint),
+            this.attachedTo.GetWorldInfo().GetY(this.attachedToImagePoint),
+            this.angleTowardsNewPosition
+              ? this.attachedTo.GetWorldInfo().GetAngle()
+              : 0
+          );
+        }
+      } else {
+        this._StopTicking2();
+      }
     }
 
     //Expressions
