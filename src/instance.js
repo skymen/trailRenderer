@@ -577,7 +577,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
     _UseTimeLength(isTime) {
       if (this.lengthIsTime === isTime) return;
       this.lengthIsTime = isTime;
-      this.needsRedraw = true;
+      this.UpdateLength();
     }
 
     //Expressions
