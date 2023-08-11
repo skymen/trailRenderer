@@ -142,6 +142,9 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
     UpdateLength() {
       let newValue;
       if (this.lengthIsTime) {
+        if (this.interval === 0) {
+          this.interval = this._runtime.GetDt(this._inst);
+        }
         newValue = this.lengthValue / this.interval;
       } else {
         newValue = this.lengthValue;
