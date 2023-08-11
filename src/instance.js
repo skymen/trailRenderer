@@ -22,7 +22,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.angleTowardsNewPosition = false;
 
       if (properties) {
-        this.lengthValue = Math.floor(Math.max(properties[0], 2));
+        this.lengthValue = properties[0];
         this.resolution = Math.floor(Math.max(properties[1], 1));
         this.widthStart = properties[2];
         this.widthEnd = properties[3];
