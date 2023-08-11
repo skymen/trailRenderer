@@ -14,6 +14,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.positions = {
         xPositions: [],
         yPositions: [],
+        zPositions: [],
         angles: [],
       };
       this.needsRedraw = false;
@@ -38,6 +39,8 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this._StopTicking();
       if (this.enabled) {
         this._StartTicking2();
+      } else {
+        this._StopTicking2();
       }
       this.InitTrail();
 
@@ -69,11 +72,13 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       let wi = this._inst.GetWorldInfo();
       let x = wi.GetX();
       let y = wi.GetY();
+      let z = wi.GetZElevation();
       let angle = wi.GetAngle();
       this.UpdateMesh();
       for (let i = 0; i < this.length; i++) {
         this.positions.xPositions.push(x);
         this.positions.yPositions.push(y);
+        this.positions.zPositions.push(z);
         this.positions.angles.push(angle);
       }
       wi.SetSize(0, 0);
@@ -163,6 +168,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       if (this.positions.xPositions.length === 0) {
         this.positions.xPositions = [wi.GetX()];
         this.positions.yPositions = [wi.GetY()];
+        this.positions.zPositions = [wi.GetZElevation()];
         this.positions.angles = [wi.GetAngle()];
       }
 
@@ -170,6 +176,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
         if (this.positions.xPositions.length === i) {
           this.positions.xPositions.push(this.positions.xPositions[i - 1]);
           this.positions.yPositions.push(this.positions.yPositions[i - 1]);
+          this.positions.zPositions.push(this.positions.zPositions[i - 1]);
           this.positions.angles.push(this.positions.angles[i - 1]);
         }
       }
@@ -178,6 +185,10 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
         this.length
       );
       this.positions.yPositions = this.positions.yPositions.slice(
+        0,
+        this.length
+      );
+      this.positions.zPositions = this.positions.zPositions.slice(
         0,
         this.length
       );
@@ -204,6 +215,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
         } else {
           let x = attWi.GetX();
           let y = attWi.GetY();
+          let z = this.followZ ? attWi.GetZElevation() : 0;
           if (this.attachedTo._sdkInst.GetImagePoint) {
             let ip = this.attachedTo._sdkInst.GetImagePoint(
               this.attachedToImagePoint
@@ -219,6 +231,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
               this._PushPoint(
                 x,
                 y,
+                z,
                 angle,
                 firstAngle ? this.angleTowardsNewPosition : false
               );
@@ -239,10 +252,11 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
                 0,
                 x,
                 y,
+                z,
                 this.angle(this._GetX(1), this._GetY(1), x, y)
               );
             } else {
-              this._SetPoint(0, x, y, C3.toDegrees(attWi.GetAngle()));
+              this._SetPoint(0, x, y, z, C3.toDegrees(attWi.GetAngle()));
             }
           }
         }
@@ -314,6 +328,11 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
               this.widthEnd / 2,
               i / (this.length - 1)
             );
+            let zElev = this.lerp(
+              this.positions.zPositions[i - 1],
+              this.positions.zPositions[i],
+              (j - 1) / this.resolution
+            );
             layoutPositions.push(
               {
                 x:
@@ -324,6 +343,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
                   nextPoint.y +
                   Math.sin(((lerpAngle - 90) * Math.PI) / 180) *
                     this.lerp(widthBefore, widthAfter, progress),
+                zElevation: zElev,
               },
               {
                 x:
@@ -334,6 +354,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
                   nextPoint.y +
                   Math.sin(((lerpAngle + 90) * Math.PI) / 180) *
                     this.lerp(widthBefore, widthAfter, progress),
+                zElevation: zElev,
               }
             );
           }
@@ -356,6 +377,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
                   this.widthEnd / 2,
                   i / (this.length - 1)
                 ),
+            zElevation: positions.zPositions[i],
           },
           {
             x:
@@ -374,6 +396,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
                   this.widthEnd / 2,
                   i / (this.length - 1)
                 ),
+            zElevation: positions.zPositions[i],
           }
         );
         //runtime.objects.Sprite.createInstance(0, layoutPositions[0].x, layoutPositions[0].y);
@@ -384,20 +407,25 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
 
       let minX = Infinity;
       let minY = Infinity;
+      let minZ = Infinity;
       let maxX = -Infinity;
       let maxY = -Infinity;
+      let maxZ = -Infinity;
 
       allPointPositions.forEach((positions) => {
         minX = Math.min(minX, positions.x);
         minY = Math.min(minY, positions.y);
+        minZ = Math.min(minZ, positions.zElevation);
         maxX = Math.max(maxX, positions.x);
         maxY = Math.max(maxY, positions.y);
+        maxZ = Math.max(maxZ, positions.zElevation);
       });
 
       wi.SetOriginX(0.5);
       wi.SetOriginY(0.5);
       wi.SetBboxChanged();
       wi.SetXY((minX + maxX) / 2, (minY + maxY) / 2);
+      wi.SetZElevation(minZ);
       wi.SetSize(maxX - minX, maxY - minY);
       wi.SetBboxChanged();
 
@@ -406,6 +434,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
           mode: "absolute",
           x: this.unlerp(minX, maxX, allPointPositions[i * 2].x),
           y: this.unlerp(minY, maxY, allPointPositions[i * 2].y),
+          zElevation: allPointPositions[i * 2].zElevation - minZ,
           u: -1,
           v: -1,
         });
@@ -413,6 +442,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
           mode: "absolute",
           x: this.unlerp(minX, maxX, allPointPositions[i * 2 + 1].x),
           y: this.unlerp(minY, maxY, allPointPositions[i * 2 + 1].y),
+          zElevation: allPointPositions[i * 2].zElevation - minZ,
           u: -1,
           v: -1,
         });
@@ -430,7 +460,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
               name: "$Length",
               value: this.length,
               onedit: (val) => {
-                this._SetLength(parseInt(val));
+                this._SetLength(parseFloat(val));
               },
             },
             {
@@ -489,6 +519,9 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
     _CompareY(id, cmp, value) {
       return C3.compare(this._GetY(id), cmp, value);
     }
+    _CompareZ(id, cmp, value) {
+      return C3.compare(this._GetZ(id), cmp, value);
+    }
     _CompareAngle(id, cmp, value) {
       return C3.compare(this._GetAngle(id), cmp, value);
     }
@@ -500,20 +533,28 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
     }
 
     //Actions
-    _Attach(object, angleTowardsNewPosition, imagePoint, destroyWithParent) {
+    _Attach(
+      object,
+      angleTowardsNewPosition,
+      imagePoint,
+      followZ,
+      destroyWithParent
+    ) {
       this.attachedTo = object.GetFirstPicked();
       this.angleTowardsNewPosition = angleTowardsNewPosition;
       this.attachedToImagePoint = imagePoint;
+      this.followZ = followZ;
       this.destroyWithParent = destroyWithParent;
     }
     _Detach() {
       this.attachedTo = null;
     }
-    _PushPoint(x, y, angle, angleTowardsNewPosition) {
+    _PushPoint(x, y, z, angle, angleTowardsNewPosition) {
       let lastX = this.positions.xPositions[0];
       let lastY = this.positions.yPositions[0];
       this.positions.xPositions.unshift(x);
       this.positions.yPositions.unshift(y);
+      this.positions.zPositions.unshift(z);
       if (angleTowardsNewPosition) {
         angle = this.angle(lastX, lastY, x, y);
         if (isNaN(angle)) angle = 0;
@@ -521,9 +562,10 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.positions.angles.unshift(angle);
       this.needsRedraw = true;
     }
-    _ResetToPoint(x, y, angle) {
+    _ResetToPoint(x, y, z, angle) {
       this.positions.xPositions = [x];
       this.positions.yPositions = [y];
+      this.positions.zPositions = [z];
       this.positions.angles = [angle];
       this.needsRedraw = true;
     }
@@ -553,10 +595,11 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.widthEnd = widthend;
       this.needsRedraw = true;
     }
-    _SetPoint(id, x, y, angle) {
+    _SetPoint(id, x, y, z, angle) {
       if (id < 0 || id >= this.length) return;
       this.positions.xPositions[id] = x;
       this.positions.yPositions[id] = y;
+      this.positions.zPositions[id] = z;
       this.positions.angles[id] = angle;
       this.needsRedraw = true;
     }
@@ -597,6 +640,10 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
     _GetY(id) {
       if (id < 0 || id >= this.length) return 0;
       return this.positions.yPositions[id];
+    }
+    _GetZ(id) {
+      if (id < 0 || id >= this.length) return 0;
+      return this.positions.zPositions[id];
     }
     _GetAngle(id) {
       if (id < 0 || id >= this.length) return 0;

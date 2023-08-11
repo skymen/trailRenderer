@@ -3,7 +3,7 @@ module.exports = {
   addonType: "behavior",
   id: "skymenTrail",
   name: "Trail Renderer",
-  version: "2.0.0.7",
+  version: "2.0.0.8",
   category:
     // "attributes",
     // "movements",
@@ -290,6 +290,13 @@ module.exports = {
           value: "",
         },
         {
+          id: "follow-z",
+          name: "Follow the Z coordinate",
+          desc: "Also follow the object's Z axis",
+          type: "boolean",
+          value: true,
+        },
+        {
           id: "destroy-with-parent",
           name: "Destroy with parent",
           desc: "Automatically destroys the trail when the object it's attached to is destroyed",
@@ -299,7 +306,7 @@ module.exports = {
       ],
       listName: "Attach",
       displayText:
-        "{my}: Attach to {0} on image point {2} (angle towards position: {1}, destroy with parent: {3})",
+        "{my}: Attach to {0} on image point {2} (angle towards position: {1}, follow z: {3}, destroy with parent: {4})",
       description: "Attach trail to object",
     },
     "push-point": {
@@ -326,6 +333,13 @@ module.exports = {
           value: "0",
         },
         {
+          id: "z",
+          name: "Z",
+          desc: "Z position of the point",
+          type: "number",
+          value: "0",
+        },
+        {
           id: "angle",
           name: "Angle",
           desc: "Angle of the point",
@@ -343,7 +357,7 @@ module.exports = {
 
       listName: "Push point",
       displayText:
-        "{my}: Push point ({0}, {1}, {2}, angle towards position: {3})",
+        "{my}: Push point ({0}, {1}, {2}, {3}, angle towards position: {4})",
       description: "Push a new point to the trail",
     },
     reset: {
@@ -467,6 +481,13 @@ module.exports = {
           value: "0",
         },
         {
+          id: "z",
+          name: "Z",
+          desc: "Z position of the point",
+          type: "number",
+          value: "0",
+        },
+        {
           id: "angle",
           name: "Angle",
           desc: "Angle of the point",
@@ -475,7 +496,7 @@ module.exports = {
         },
       ],
       listName: "Reset to point",
-      displayText: "{my}: Reset to point ({0}, {1}, {2})",
+      displayText: "{my}: Reset to point ({0}, {1}, {2}, {3})",
       description: "Reset the trail to a point",
     },
     detach: {
@@ -522,6 +543,13 @@ module.exports = {
           value: "0",
         },
         {
+          id: "z",
+          name: "Z",
+          desc: "Z position of the point",
+          type: "number",
+          value: "0",
+        },
+        {
           id: "angle",
           name: "Angle",
           desc: "Angle of the point",
@@ -530,7 +558,7 @@ module.exports = {
         },
       ],
       listName: "Set point",
-      displayText: "{my}: Set point {0} to ({1}, {2}, {3})",
+      displayText: "{my}: Set point {0} to ({1}, {2}, {3}, {4})",
       description: "Set a point in the trail",
     },
     SetEnabled: {
@@ -746,6 +774,37 @@ module.exports = {
       displayText: "{my}: Point {0} Y {1} {2}",
       description: "Compare the Y position of a point",
     },
+    CompareZ: {
+      category: "general",
+      forward: "_CompareZ",
+      autoScriptInterface: false,
+      highlight: false,
+      params: [
+        {
+          id: "id",
+          name: "ID",
+          desc: "The id of the point to compare",
+          type: "number",
+          value: "0",
+        },
+        {
+          id: "cmp",
+          name: "Cmp",
+          desc: "Compare operator",
+          type: "cmp",
+        },
+        {
+          id: "value",
+          name: "Value",
+          desc: "The value to compare to",
+          type: "number",
+          value: "0",
+        },
+      ],
+      listName: "Compare Z",
+      displayText: "{my}: Point {0} Z {1} {2}",
+      description: "Compare the Z position of a point",
+    },
     "compare-angle": {
       category: "general",
       id: "compare-angle",
@@ -907,6 +966,25 @@ module.exports = {
         },
       ],
       description: "Get the Y position of a point",
+    },
+    GetZ: {
+      category: "params",
+      expressionName: "GetZ",
+      scriptName: "GetZ",
+      forward: "_GetZ",
+      autoScriptInterface: true,
+      highlight: false,
+      returnType: "number",
+      params: [
+        {
+          id: "id",
+          name: "ID",
+          desc: "The id of the point to get",
+          type: "number",
+          value: "0",
+        },
+      ],
+      description: "Get the Z position of a point",
     },
     "get-angle": {
       category: "params",
