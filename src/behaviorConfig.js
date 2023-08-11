@@ -3,7 +3,7 @@ module.exports = {
   addonType: "behavior",
   id: "skymenTrail",
   name: "Trail Renderer",
-  version: "2.0.0.2",
+  version: "2.0.0.3",
   category:
     // "attributes",
     // "movements",
@@ -142,6 +142,16 @@ module.exports = {
       },
       name: "Enabled",
       desc: "Whether the trail is enabled",
+    },
+    {
+      type: "check",
+      id: "length-is-time",
+      options: {
+        initialValue: false,
+        interpolatable: false,
+      },
+      name: "Use Time Length",
+      desc: "Whether the length is in seconds instead of number of steps",
     },
   ],
   aceCategories: {
@@ -543,6 +553,26 @@ module.exports = {
       displayText: "{my}: Set enabled to {0}",
       description: "Set whether the trail is enabled",
     },
+    UseTimeLength: {
+      category: "general",
+      id: "UseTimeLength",
+      forward: "_UseTimeLength",
+      autoScriptInterface: true,
+      highlight: false,
+      deprecated: false,
+      isAsync: false,
+      params: [
+        {
+          id: "use",
+          name: "Use",
+          desc: "Whether to use time length",
+          type: "boolean",
+        },
+      ],
+      listName: "Use time length",
+      displayText: "{my}: Use time length: {0}",
+      description: "Set whether to use time length",
+    },
   },
   Cnds: {
     /*
@@ -758,6 +788,17 @@ module.exports = {
       listName: "Is enabled",
       displayText: "{my}: Is enabled",
       description: "Check if the trail is enabled",
+    },
+    LengthIsTime: {
+      category: "general",
+      id: "LengthIsTime",
+      forward: "_LengthIsTime",
+      autoScriptInterface: true,
+      highlight: true,
+      params: [],
+      listName: "Length is time",
+      displayText: "{my}: Length is time",
+      description: "Check if the length is in time",
     },
   },
   Exps: {

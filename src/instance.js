@@ -4,9 +4,13 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       super(behInst);
 
       this.length = 15;
+      this.lengthValue = 15;
       this.resolution = 1;
       this.widthStart = 20;
       this.widthEnd = 0;
+      this.interval = 0;
+      this.enabled = true;
+      this.lengthIsTime = false;
       this.positions = {
         xPositions: [],
         yPositions: [],
@@ -18,13 +22,16 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.angleTowardsNewPosition = false;
 
       if (properties) {
-        this.length = Math.floor(Math.max(properties[0], 2));
+        this.lengthValue = Math.floor(Math.max(properties[0], 2));
         this.resolution = Math.floor(Math.max(properties[1], 1));
         this.widthStart = properties[2];
         this.widthEnd = properties[3];
         this.interval = Math.max(properties[4], 0);
         this.enabled = properties[5];
+        this.lengthIsTime = properties[6];
       }
+
+      this.UpdateLength();
 
       this.lastGameTime = -this.interval;
 
@@ -132,6 +139,20 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.needsReconstructing = true;
     }
 
+    UpdateLength() {
+      let newValue;
+      if (this.lengthIsTime) {
+        newValue = this.lengthValue / this.interval;
+      } else {
+        newValue = this.lengthValue;
+      }
+
+      if (newValue !== this.length) {
+        this.length = Math.floor(Math.max(newValue, 2));
+        this.UpdateMesh();
+      }
+    }
+
     TrimOrExtendPositions() {
       let wi = this._IsAttached()
         ? this.attachedTo.GetWorldInfo()
@@ -196,17 +217,27 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
                 x,
                 y,
                 angle,
-                firstAngle ? this.angleTowardsNewPosition : null
+                firstAngle ? this.angleTowardsNewPosition : false
               );
               if (firstAngle) {
                 firstAngle = false;
                 angle = this._GetAngle(0);
               }
+              if (interval === 0) break;
               timeDiff -= interval;
             }
           } else {
             // update the first point
-            this._SetPoint(0, x, y, C3.toDegrees(attWi.GetAngle()));
+            if (this.angleTowardsNewPosition) {
+              this._SetPoint(
+                0,
+                x,
+                y,
+                this.angle(this._GetX(1), this._GetY(1), x, y)
+              );
+            } else {
+              this._SetPoint(0, x, y, C3.toDegrees(attWi.GetAngle()));
+            }
           }
         }
       }
@@ -458,6 +489,9 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
     _IsEnabled() {
       return this.enabled;
     }
+    _LengthIsTime() {
+      return this.lengthIsTime;
+    }
 
     //Actions
     _Attach(object, angleTowardsNewPosition, imagePoint, destroyWithParent) {
@@ -495,9 +529,9 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
     }
     _SetLength(length) {
       length = Math.floor(Math.max(length, 2));
-      if (this.length === length) return;
-      this.length = length;
-      this.UpdateMesh();
+      if (this.lengthValue === length) return;
+      this.lengthValue = length;
+      this.UpdateLength();
     }
     _SetResolution(resolution) {
       resolution = Math.floor(Math.max(resolution, 1));
@@ -538,6 +572,12 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       } else {
         this._StopTicking2();
       }
+    }
+
+    _UseTimeLength(isTime) {
+      if (this.lengthIsTime === isTime) return;
+      this.lengthIsTime = isTime;
+      this.needsRedraw = true;
     }
 
     //Expressions
