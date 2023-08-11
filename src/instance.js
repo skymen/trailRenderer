@@ -143,7 +143,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       let newValue;
       if (this.lengthIsTime) {
         if (this.interval === 0) {
-          this.interval = this._runtime.GetDt(this._inst);
+          this.interval = 0.1;
         }
         newValue = this.lengthValue / this.interval;
       } else {
@@ -226,7 +226,10 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
                 firstAngle = false;
                 angle = this._GetAngle(0);
               }
-              if (interval === 0) break;
+              if (interval === 0) {
+                timeDiff = -1;
+                break;
+              }
               timeDiff -= interval;
             }
           } else {
