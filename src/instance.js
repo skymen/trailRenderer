@@ -64,10 +64,6 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       return (1 - x) * a + b * x;
     }
 
-    unlerp(a, b, x) {
-      return (x - a) / (b - a);
-    }
-
     InitTrail() {
       let wi = this._inst.GetWorldInfo();
       let x = wi.GetX();
@@ -432,16 +428,16 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       for (let i = 0; i < (this.length - 1) * this.resolution + 1; i++) {
         wi.SetMeshPoint(i, 0, {
           mode: "absolute",
-          x: this.unlerp(minX, maxX, allPointPositions[i * 2].x),
-          y: this.unlerp(minY, maxY, allPointPositions[i * 2].y),
+          x: C3.unlerp(minX, maxX, allPointPositions[i * 2].x),
+          y: C3.unlerp(minY, maxY, allPointPositions[i * 2].y),
           zElevation: allPointPositions[i * 2].zElevation - minZ,
           u: -1,
           v: -1,
         });
         wi.SetMeshPoint(i, 1, {
           mode: "absolute",
-          x: this.unlerp(minX, maxX, allPointPositions[i * 2 + 1].x),
-          y: this.unlerp(minY, maxY, allPointPositions[i * 2 + 1].y),
+          x: C3.unlerp(minX, maxX, allPointPositions[i * 2 + 1].x),
+          y: C3.unlerp(minY, maxY, allPointPositions[i * 2 + 1].y),
           zElevation: allPointPositions[i * 2].zElevation - minZ,
           u: -1,
           v: -1,
