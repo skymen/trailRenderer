@@ -152,7 +152,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       }
 
       if (newValue !== this.length) {
-        this.length = Math.floor(Math.max(newValue, 2));
+        this.length = Math.ceil(Math.max(newValue, 2));
         this.UpdateMesh();
       }
     }
@@ -541,6 +541,7 @@ function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
       this.attachedToImagePoint = imagePoint;
       this.followZ = followZ;
       this.destroyWithParent = destroyWithParent;
+      this.lastGameTime = this._runtime.GetGameTime();
     }
     _Detach() {
       this.attachedTo = null;

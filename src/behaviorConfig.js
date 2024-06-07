@@ -3,7 +3,7 @@ module.exports = {
   addonType: "behavior",
   id: "skymenTrail",
   name: "Trail Renderer",
-  version: "2.0.1.0",
+  version: "2.0.1.1",
   category:
     // "attributes",
     // "movements",
